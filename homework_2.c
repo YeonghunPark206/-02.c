@@ -47,7 +47,7 @@ TreeNode* parse_tree() {
     if (pos >= len) return NULL;
     
     if (input[pos] != '(') return NULL;
-    pos++;  // '(' 스킵
+    pos++; 
     
     if (pos >= len) return NULL;
     char node_data = input[pos++];
@@ -60,14 +60,13 @@ TreeNode* parse_tree() {
     while (pos < len && input[pos] == '(') {
         TreeNode* child = parse_tree();
         if (child != NULL) {
-            // 자식 노드 배열 재할당 및 추가
             node->children = (TreeNode**)realloc(node->children, sizeof(TreeNode*) * (node->child_count + 1));
             node->children[node->child_count++] = child;
         }
     }
     
     if (pos < len && input[pos] == ')') {
-        pos++;  // ')' 스킵
+        pos++; 
     }
     
     return node;
