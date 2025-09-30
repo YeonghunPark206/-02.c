@@ -12,7 +12,6 @@ typedef struct Node {
     struct Node* right;
 } Node;
 
-// 스택 구현 (Node*)
 typedef struct {
     Node* data[STACK_SIZE];
     int top;
@@ -35,7 +34,6 @@ int isEmpty(NodeStack* s) {
     return s->top == -1;
 }
 
-// 괄호 기반 트리 파싱
 Node* parse_tree(const char* str) {
     NodeStack stack;
     stack.top = -1;
@@ -72,10 +70,9 @@ Node* parse_tree(const char* str) {
         }
     }
 
-    return curr; // 최종 루트 반환
+    return curr; 
 }
 
-// 트리를 배열 형태로 저장
 void build_array_tree(Node* node, char tree[], int idx) {
     if (!node || idx >= MAX_TREE_SIZE) return;
     tree[idx] = node->val;
@@ -83,7 +80,6 @@ void build_array_tree(Node* node, char tree[], int idx) {
     build_array_tree(node->right, tree, 2 * idx + 1);
 }
 
-// 배열 기반 전위 순회 (Pre-order)
 void preorder_iterative(char tree[]) {
     int stack[STACK_SIZE];
     int top = -1;
@@ -93,12 +89,11 @@ void preorder_iterative(char tree[]) {
         int idx = stack[top--];
         if (idx >= MAX_TREE_SIZE || tree[idx] == 0) continue;
         printf("%c ", tree[idx]);
-        stack[++top] = 2 * idx + 1; // right
-        stack[++top] = 2 * idx;     // left
+        stack[++top] = 2 * idx + 1; 
+        stack[++top] = 2 * idx;     
     }
 }
 
-// 배열 기반 중위 순회 (In-order)
 void inorder_iterative(char tree[]) {
     int stack[STACK_SIZE];
     int top = -1;
@@ -118,7 +113,6 @@ void inorder_iterative(char tree[]) {
     }
 }
 
-// 배열 기반 후위 순회 (Post-order using 2 stacks)
 void postorder_iterative(char tree[]) {
     int stack1[STACK_SIZE], stack2[STACK_SIZE];
     int top1 = -1, top2 = -1;
@@ -128,8 +122,8 @@ void postorder_iterative(char tree[]) {
         int idx = stack1[top1--];
         if (idx >= MAX_TREE_SIZE || tree[idx] == 0) continue;
         stack2[++top2] = idx;
-        stack1[++top1] = 2 * idx;     // left
-        stack1[++top1] = 2 * idx + 1; // right
+        stack1[++top1] = 2 * idx;    
+        stack1[++top1] = 2 * idx + 1; 
     }
 
     while (top2 >= 0) {
@@ -140,14 +134,11 @@ void postorder_iterative(char tree[]) {
 int main() {
     const char* input = "(A (B (C D) E (G H (I J (K (L) M (N))))))";
 
-    // 1. 트리 파싱
     Node* root = parse_tree(input);
 
-    // 2. 트리를 배열에 저장 (인덱스 1부터)
     char tree[MAX_TREE_SIZE] = {0};
     build_array_tree(root, tree, 1);
 
-    // 3. 반복 순회 출력
     printf("pre-order: ");
     preorder_iterative(tree);
     printf("\n");
