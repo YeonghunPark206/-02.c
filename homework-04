@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define ARRAY_SIZE 100
+#define MAX_VALUE 1000
+
+typedef struct Node {
+    int key;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* create_node(int key) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->key = key;
+    new_node->left = NULL;
+    new_node->right = NULL;
+    return new_node;
+}
+
+Node* insert(Node* root, int key) {
+    if (root == NULL) return create_node(key);
+    if (key < root->key)
+        root->left = insert(root->left, key);
+    else
+        root->right = insert(root->right, key);
+    return root;
+}
+
+int bst_search(Node* root, int key, int* comparisons) {
+    if (root == NULL) return 0;
+    (*comparisons)++;
+    if (key == root->key) return 1;
+    else if (key < root->key) return bst_search(root->left, key, comparisons);
+    else return bst_search(root->right, key, comparisons);
+}
+
+int linear_search(int arr[], int size, int target, int* comparisons) {
+    for (int i = 0; i < size; i++) {
+        (*comparisons)++;
+        if (arr[i] == target) return 1;
+    }
+    return 0;
+}
+
+int main() {
+    int array[ARRAY_SIZE];
+    int exists[MAX_VALUE + 1] = {0};
+
+    srand((unsigned int)time(NULL));
+
+    int count = 0;
+    while (count < ARRAY_SIZE) {
+        int num = rand() % (MAX_VALUE + 1);
+        if (!exists[num]) {
+            array[count++] = num;
+            exists[num] = 1;
+        }
+    }
+
+    Node* root = NULL;
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        root = insert(root, array[i]);
+    }
+
+    int target = array[rand() % ARRAY_SIZE];
+
+    int linear_comparisons = 0;
+    clock_t start = clock();
+    int found_linear = linear_search(array, ARRAY_SIZE, target, &linear_comparisons);
+    clock_t end = clock();
+    double linear_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+    int bst_comparisons = 0;
+    start = clock();
+    int found_bst = bst_search(root, target, &bst_comparisons);
+    end = clock();
+    double bst_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("Target to search: %d\n", target);
+    printf("Linear Search - Found: %s, Comparisons: %d, Time: %lf sec\n",
+           found_linear ? "Yes" : "No", linear_comparisons, linear_time);
+    printf("BST Search - Found: %s, Comparisons: %d, Time: %lf sec\n",
+           found_bst ? "Yes" : "No", bst_comparisons, bst_time);
+
+    return 0;
+}
