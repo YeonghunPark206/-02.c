@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define N 10000
+#define RANGE 1000000
+#define LOOP 100
+
+long long insertion_sort(int arr[], int n) {
+    long long cmp = 0;
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0) {
+            cmp++;
+            if (arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j--;
+            } else break;
+        }
+        arr[j + 1] = key;
+    }
+    return cmp;
+}
+
+long long shell_sort_basic(int arr[], int n) {
+    long long cmp = 0;
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+            while (j >= gap) {
+                cmp++;
+                if (arr[j - gap] > temp) {
+                    arr[j] = arr[j - gap];
+                    j -= gap;
+                } else break;
+            }
+            arr[j] = temp;
+        }
+    }
+    return cmp;
+}
+
+long long shell_sort_hibbard(int arr[], int n) {
+    long long cmp = 0;
+
+    int gaps[30];
+    int size = 0;
+
+    for (int k = 1;; k++) {
+        int g = (1 << k) - 1;
+        if (g > n) break;
+        gaps[size++] = g;
+    }
+
+    for (int g = size - 1; g >= 0; g--) {
+        int gap = gaps[g];
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+            while (j >= gap) {
+                cmp++;
+                if (arr[j - gap] > temp) {
+                    arr[j] = arr[j - gap];
+                    j -= gap;
+                } else break;
+            }
+            arr[j] = temp;
+        }
+    }
+    return cmp;
+}
+
+int main() {
+    int *data = malloc(sizeof(int) * N);
+    int *copy = malloc(sizeof(int) * N);
+    srand(time(NULL));
+
+    long long cmp_ins = 0, cmp_shell_basic = 0, cmp_shell_hib = 0;
+
+    for (int t = 0; t < LOOP; t++) {
+        for (int i = 0; i < N; i++)
+            data[i] = rand() % RANGE;
+
+        for (int i = 0; i < N; i++) copy[i] = data[i];
+        cmp_ins += insertion_sort(copy, N);
+
+        for (int i = 0; i < N; i++) copy[i] = data[i];
+        cmp_shell_basic += shell_sort_basic(copy, N);
+
+        for (int i = 0; i < N; i++) copy[i] = data[i];
+        cmp_shell_hib += shell_sort_hibbard(copy, N);
+    }
+
+    printf("Insertion Sort Avg Compare: %lld\n", cmp_ins / LOOP);
+    printf("Shell Sort Basic Avg Compare: %lld\n", cmp_shell_basic / LOOP);
+    printf("Shell Sort Hibbard Avg Compare: %lld\n", cmp_shell_hib / LOOP);
+
+    free(data);
+    free(copy);
+    return 0;
+}
